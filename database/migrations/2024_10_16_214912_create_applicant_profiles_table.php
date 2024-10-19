@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('education');
             $table->text('experience');
             $table->text('skills');
-            $table->string('resume_url');
+            $table->string('resume_url')->nullable();
             $table->timestamps();
         });
     }

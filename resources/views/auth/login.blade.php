@@ -10,9 +10,16 @@
                 data-background-lg="{{ asset('backend/assets') }}/img/illustrations/signin.svg">
                 <div class="col-12 d-flex align-items-center justify-content-center">
                     <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
-                        <div class="text-center text-md-center mb-4 mt-md-0">
-                            <h1 class="mb-0 h3">{{ __('Sign in to Loker App') }}</h1>
-                        </div>
+                        @auth
+                            <div class="text-center text-md-center mb-5 mt-md-5">
+                                <h1 class="mb-3 h3">{{ __('Welcome Back!') }}</h1>
+                                <p>You are already logged in.</p>
+                                <a href="{{ url('/panel/dashboard') }}" class="btn btn-gray-800 mt-4">Go to Dashboard</a>
+                            </div>
+                        @else
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h3">{{ __('Sign in to Loker App') }}</h1>
+                            </div>
 
                         @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -139,6 +146,7 @@
                                 <a href="{{ route('register') }}" class="fw-bold">{{ __('Register') }}</a>
                             </span>
                         </div>
+                        @endauth
                     </div>
                 </div>
             </div>

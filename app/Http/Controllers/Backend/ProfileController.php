@@ -30,7 +30,7 @@ class ProfileController extends Controller
         $profile = $user->profile ?? new Profile();
 
         $validatedData = $request->validate([
-            'full_name' => 'required|string|max:255',
+            'full_name' => 'required|string|min:4|max:70',
             'date_of_birth' => 'required|date',
             'phone_number' => 'required|numeric|unique:applicant_profiles,phone_number,' . ($profile->id ?? 'NULL'),
             'address' => 'required|string',
