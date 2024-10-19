@@ -23,7 +23,7 @@
                                 <div class="row align-items-center">
                                     <div class="col-auto">
                                         <!-- Avatar -->
-                                        <img alt="Image placeholder"
+                                        <img alt=""
                                             src="{{ asset('backend') }}/assets/img/team/profile-picture-1.jpg"
                                             class="avatar-md rounded">
                                     </div>
@@ -58,8 +58,10 @@
                     <a class="nav-link dropdown-toggle pt-1 px-0" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <div class="media d-flex align-items-center">
-                            <img class="avatar rounded-circle" alt="Image placeholder"
-                                src="{{ asset('backend') }}/assets/img/team/profile-picture-3.jpg">
+                            <img class="avatar rounded-circle" alt=""
+                                src="{{ auth()->user()->profile && auth()->user()->profile->image
+                                    ? asset('storage/' . auth()->user()->profile->image)
+                                    : asset('backend/assets/img/team/profile-picture-3.jpg') }}">
                             <div class="media-body ms-2 text-dark align-items-center d-none d-lg-block">
                                 <span class="mb-0 font-small fw-bold text-gray-900">{{ Auth::user()->username }}</span>
                             </div>

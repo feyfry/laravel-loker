@@ -24,7 +24,8 @@ class Profile extends Model
         'education',
         'experience',
         'skills',
-        'resume_url',
+        'resume',
+        'image',
     ];
 
     public static function booted()

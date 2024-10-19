@@ -41,10 +41,17 @@
 </div>
 @endif
 
+@if (session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 {{-- form --}}
 <div class="card border-0 shadow mb-4">
     <div class="card-body">
-        <form action="{{ route('panel.profile.update') }}" method="post">
+        <form action="{{ route('panel.profile.update') }}" method="post" enctype="multipart/form-data">
             @method('PUT')
             @csrf
 
@@ -143,18 +150,55 @@
                 @enderror
             </div>
 
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="resume_url">URL CV</label>
-                    <input type="url" name="resume_url" id="resume_url"
-                        class="form-control @error('resume_url') is-invalid @enderror"
-                        value="{{ old('resume_url', $profile->resume_url) }}">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="resume">Resume/CV: <sub class="text-muted text-danger text-italic">(Format: PDF
+                                only)</sub></label>
+                        <input type="file" name="resume" id="resume" accept="application/pdf"
+                            class="form-control @error('resume') is-invalid @enderror"
+                            value="{{ old('resume', $profile->resume) }}">
 
-                    @error('resume_url')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                    @enderror
+                        @error('resume')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+
+                        @if ($profile->resume)
+                        <div class="mt-3">
+                            <a href="{{ asset('storage/' . $profile->resume) }}" target="_blank">
+                                <div>
+                                    <u><i class="fas fa-eye me-1"></i> Lihat CV</u>
+                                </div>
+                            </a>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="image">Foto Profil: <sub class="text-muted text-danger text-italic">(Format:
+                                jpeg/png/jpg/svg)</sub></label>
+                        <input type="file" name="image" id="image" accept="image/*"
+                            class="form-control @error('image') is-invalid @enderror"
+                            value="{{ old('image', $profile->image) }}">
+
+                        @error('image')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+
+                        @if ($profile->image)
+                        <div class="mt-3">
+                            <a href="{{ asset('storage/' . $profile->image) }}" target="_blank">
+                                <img src="{{ asset('storage/' . $profile->image) }}" alt="" class="img-fluid rounded" width="30%">
+                            </a>
+                        </div>
+                        @endif
+                    </div>
                 </div>
             </div>
 
