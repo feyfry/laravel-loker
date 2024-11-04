@@ -117,7 +117,7 @@
                                 @elseif ($application->status == 'rejected')
                                     <td><span class="badge bg-danger">Ditolak</span></td>
                                 @endif
-                                <td>{{ $application->date }}</td>
+                                <td>{{ date('d M Y', strtotime($application->date)) }}</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -239,7 +239,7 @@
             @foreach($lamaran as $item)
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="fs-6 fw-bold mb-2 mt-2">{{ $item->jobdesc->title }}</h6>
-                <small class="text-muted">{{ $item->created_at->format('d M Y') }}</small>
+                <small class="text-muted">{{ date('d M Y', strtotime($item->created_at . '+7 hours')) }}</small>
             </div>
             <div class="position-relative m-4 mb-5">
                 <div class="progress" role="progressbar" aria-label="Progress" aria-valuenow="50" aria-valuemin="0"

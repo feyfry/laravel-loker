@@ -42,7 +42,7 @@ Route::prefix('panel')->middleware('auth')->group(function () {
     // Hanya pengguna dengan role admin yang dapat mengakses route ini
     Route::middleware(CheckRoleMiddleware::class . ':admin')->group(function () {
         Route::resource('/loker', LokerController::class)->names('panel.loker');
-        Route::resource('/lamaran', LamaranController::class)->names('panel.lamaran');
+        Route::resource('/lamaran', LamaranController::class)->except('create', 'store')->names('panel.lamaran');
         Route::post('/lamaran/download', [LamaranController::class, 'download'])->name('panel.lamaran.download');
     });
 });

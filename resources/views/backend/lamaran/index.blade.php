@@ -86,7 +86,7 @@
                             <span class="badge bg-danger">Ditolak</span>
                             @endif
                         </td>
-                        <td>{{ $lamaran->created_at->format('d M Y H:i') }}</td>
+                        <td>{{ date('d M Y H:i', strtotime($lamaran->created_at . '+7 hours')) }}</td>
                         <td>
                             <div class="btn-group">
                                 <a href="{{ route('panel.lamaran.show', $lamaran->uuid) }}"

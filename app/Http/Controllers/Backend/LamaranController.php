@@ -43,34 +43,11 @@ class LamaranController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('backend.lamaran.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'jobdesc_id' => 'required',
-            'applicant_id' => 'required',
-        ]);
-
-        Lamaran::create($request->all());
-
-        return redirect()->route('backend.lamaran.index')->with('success', 'Lamaran successfully created');
-    }
-
-    /**
      * Display the specified resource.
      */
-    public function show(Lamaran $lamaran): View
+    public function show(): View
     {
-        return view('backend.lamaran.show', compact('lamaran'));
+        return view('backend.lamaran.show');
     }
 
     /**
