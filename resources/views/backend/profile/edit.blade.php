@@ -1,6 +1,6 @@
 @extends('backend.template.main')
 
-@section('title', 'Edit Profile')
+@section('title', 'Lengkapi Profile | Data Diri')
 
 @section('content')
 <div class="py-4">
@@ -17,14 +17,14 @@
                 </a>
             </li>
             <li class="breadcrumb-item"><a href="{{ route('panel.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Edit Profile</li>
+            <li class="breadcrumb-item active" aria-current="page">My Profile</li>
         </ol>
     </nav>
 
     <div class="d-flex justify-content-between w-100 flex-wrap">
         <div class="mb-3 mb-lg-0">
-            <h1 class="h4">Edit Profile</h1>
-            <p class="mb-0">Isi data profile</p>
+            <h1 class="h4">Lengkapi Profile</h1>
+            <p class="mb-0">Isi Data Diri Anda</p>
         </div>
         <div>
             <a href="{{ route('panel.dashboard') }}" class="btn btn-outline-gray-600 d-inline-flex align-items-center">
@@ -48,7 +48,6 @@
 </div>
 @endif
 
-{{-- form --}}
 <div class="card border-0 shadow mb-4">
     <div class="card-body">
         <form action="{{ route('panel.profile.update') }}" method="post" enctype="multipart/form-data">
@@ -57,6 +56,85 @@
 
             <div class="row">
                 <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        @php
+                            $imageExists = $profile->image && Storage::disk('public')->exists($profile->image);
+                            $resumeExists = $profile->resume && Storage::disk('public')->exists($profile->resume);
+                        @endphp
+
+                        @if ($imageExists)
+                            <div class="m-3">
+                                <img src="{{ asset('storage/' . $profile->image) }}" alt="" class="img-fluid rounded"
+                                    width="30%" style="pointer-events: none;">
+                            </div>
+                        @endif
+
+                        <div class="dropdown-divider"></div>
+
+                        <div class="card-body">
+                            <div class="mb-1">
+                                <label for="image">Foto Profil: <sub class="text-muted text-danger text-italic">(Format: jpeg/png/jpg/svg)</sub></label>
+                                <input type="file" name="image" id="image" accept="image/*" class="form-control @error('image') is-invalid @enderror">
+
+                                @error('image')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+
+                                @if ($imageExists)
+                                <div class="mt-1">
+                                    <div class="p-2 badge bg-success text-white rounded-pill">
+                                        Foto Profil Tersimpan!
+                                    </div>
+                                </div>
+                                @else
+                                    @if ($profile->image)
+                                    <div class="mt-1">
+                                        <div class="p-2 badge bg-danger text-white rounded-pill">
+                                            File foto tidak ditemukan!
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+
+                        <div class="card-body">
+                            <div class="mb-1">
+                                <label for="resume">Resume | CV: <sub
+                                        class="text-muted text-danger text-italic">(Format: PDF only)</sub></label>
+                                <input type="file" name="resume" id="resume" accept="application/pdf" class="form-control @error('resume') is-invalid @enderror">
+
+                                @error('resume')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+
+                                @if ($resumeExists)
+                                <div class="mt-1">
+                                    <div class="p-2 badge bg-success text-white rounded-pill">
+                                        Resume | CV Tersimpan!
+                                    </div>
+                                </div>
+                                @else
+                                    @if ($profile->resume)
+                                    <div class="mt-1">
+                                        <div class="p-2 badge bg-danger text-white rounded-pill">
+                                            File CV tidak ditemukan!
+                                        </div>
+                                    </div>
+                                    @endif
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
                     <div class="mb-3">
                         <label for="full_name">Nama Lengkap</label>
                         <input type="text" name="full_name" id="full_name"
@@ -69,135 +147,84 @@
                         </span>
                         @enderror
                     </div>
-                </div>
 
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="date_of_birth">Tanggal lahir</label>
-                        <input type="date" name="date_of_birth" id="date_of_birth"
-                            class="form-control @error('date_of_birth') is-invalid @enderror"
-                            value="{{ old('date_of_birth', $profile->date_of_birth) }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="date_of_birth">Tanggal lahir</label>
+                                <input type="date" name="date_of_birth" id="date_of_birth"
+                                    class="form-control @error('date_of_birth') is-invalid @enderror"
+                                    value="{{ old('date_of_birth', $profile->date_of_birth) }}">
 
-                        @error('date_of_birth')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label for="phone_number">No. HP</label>
-                        <input type="number" name="phone_number" id="phone_number"
-                            class="form-control @error('phone_number') is-invalid @enderror"
-                            value="{{ old('phone_number', $profile->phone_number) }}">
-
-                        @error('phone_number')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="address">Alamat</label>
-                <textarea name="address" id="address" cols="5" rows="5"
-                    class="form-control @error('address') is-invalid @enderror">{{ old('address', $profile->address) }}</textarea>
-
-                @error('address')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="education">Pendidikan</label>
-                <textarea name="education" id="education" cols="5" rows="5"
-                    class="form-control @error('education') is-invalid @enderror">{{ old('education', $profile->education) }}</textarea>
-
-                @error('education')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="experience">Pengalaman</label>
-                <textarea name="experience" id="experience" cols="5" rows="5"
-                    class="form-control @error('experience') is-invalid @enderror">{{ old('experience', $profile->experience) }}</textarea>
-
-                @error('experience')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="skills">Keahlian</label>
-                <textarea name="skills" id="skills" cols="5" rows="5"
-                    class="form-control @error('skills') is-invalid @enderror">{{ old('skills', $profile->skills) }}</textarea>
-
-                @error('skills')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-                @enderror
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="resume">Resume/CV: <sub class="text-muted text-danger text-italic">(Format: PDF
-                                only)</sub></label>
-                        <input type="file" name="resume" id="resume" accept="application/pdf"
-                            class="form-control @error('resume') is-invalid @enderror"
-                            value="{{ old('resume', $profile->resume) }}">
-
-                        @error('resume')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                        @enderror
-
-                        @if ($profile->resume)
-                        <div class="mt-3">
-                            <a href="{{ asset('storage/' . $profile->resume) }}" target="_blank">
-                                <div>
-                                    <u><i class="fas fa-eye me-1"></i> Lihat CV</u>
-                                </div>
-                            </a>
+                                @error('date_of_birth')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
                         </div>
-                        @endif
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone_number">No. HP</label>
+                                <input type="number" name="phone_number" id="phone_number"
+                                    class="form-control @error('phone_number') is-invalid @enderror"
+                                    value="{{ old('phone_number', $profile->phone_number) }}">
+
+                                @error('phone_number')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="image">Foto Profil: <sub class="text-muted text-danger text-italic">(Format:
-                                jpeg/png/jpg/svg)</sub></label>
-                        <input type="file" name="image" id="image" accept="image/*"
-                            class="form-control @error('image') is-invalid @enderror"
-                            value="{{ old('image', $profile->image) }}">
+                        <label for="address">Alamat</label>
+                        <textarea name="address" id="address" cols="5" rows="5"
+                            class="form-control @error('address') is-invalid @enderror">{{ old('address', $profile->address) }}</textarea>
 
-                        @error('image')
+                        @error('address')
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $message }}</strong>
                         </span>
                         @enderror
+                    </div>
 
-                        @if ($profile->image)
-                        <div class="mt-3">
-                            <a href="{{ asset('storage/' . $profile->image) }}" target="_blank">
-                                <img src="{{ asset('storage/' . $profile->image) }}" alt="" class="img-fluid rounded" width="30%">
-                            </a>
-                        </div>
-                        @endif
+                    <div class="mb-3">
+                        <label for="education">Pendidikan</label>
+                        <textarea name="education" id="education" cols="5" rows="5"
+                            class="form-control @error('education') is-invalid @enderror">{{ old('education', $profile->education) }}</textarea>
+
+                        @error('education')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="experience">Pengalaman</label>
+                        <textarea name="experience" id="experience" cols="5" rows="5"
+                            class="form-control @error('experience') is-invalid @enderror">{{ old('experience', $profile->experience) }}</textarea>
+
+                        @error('experience')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="skills">Keahlian</label>
+                        <textarea name="skills" id="skills" cols="5" rows="5"
+                            class="form-control @error('skills') is-invalid @enderror">{{ old('skills', $profile->skills) }}</textarea>
+
+                        @error('skills')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                        @enderror
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
-class Loker extends Model
+class ListLoker extends Model
 {
     use HasFactory;
 
@@ -38,13 +38,13 @@ class Loker extends Model
         });
     }
 
-    public function postedBy(): BelongsTo
+    public function loker(): HasMany
     {
-        return $this->belongsTo(User::class, 'posted_by');
+        return $this->hasMany(Loker::class, 'uuid', 'uuid');
     }
 
-    public function lamaran(): HasMany
+    public function user(): BelongsTo
     {
-        return $this->hasMany(Lamaran::class, 'jobdesc_id');
+        return $this->belongsTo(User::class, 'posted_by');
     }
 }

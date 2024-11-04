@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\LamaranController;
+use App\Http\Controllers\Backend\ListLokerController;
+use App\Http\Controllers\Backend\LokerController;
 use App\Http\Controllers\Backend\ProfileController;
+use App\Http\Middleware\CheckRoleMiddleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +24,25 @@ Route::prefix('panel')->middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('panel.profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('panel.profile.update');
 
+    // Hanya pengguna dengan role pelamar yang dapat mengakses route ini
+    Route::middleware(CheckRoleMiddleware::class . ':pelamar')->group(function () {
+    Route::resource('/list', ListLokerController::class)->only('index', 'show')->names('panel.list');
+    Route::match(['get', 'post'], '/list/{uuid}/apply', function ($uuid) {
+        if (request()->isMethod('get')) {
+            if (!Auth::check()) {
+                return redirect()->route('login');
+            }
+            return response()->view('errors.403', [], 403);
+        }
+
+        return app(ListLokerController::class)->apply(request(), $uuid);
+    })->name('panel.list.apply');
+    });
+
     // Hanya pengguna dengan role admin yang dapat mengakses route ini
+    Route::middleware(CheckRoleMiddleware::class . ':admin')->group(function () {
+        Route::resource('/loker', LokerController::class)->names('panel.loker');
+        Route::resource('/lamaran', LamaranController::class)->names('panel.lamaran');
+        Route::post('/lamaran/download', [LamaranController::class, 'download'])->name('panel.lamaran.download');
+    });
 });

@@ -30,7 +30,8 @@ class ProfileController extends Controller
         $user = Auth::user();
         $profile = $user->profile ?? new Profile();
 
-        $validatedData = $request->validate([
+        // Basic validation rules
+        $rules = [
             'full_name' => 'required|string|min:4|max:70',
             'date_of_birth' => 'required|date',
             'phone_number' => 'required|numeric|unique:applicant_profiles,phone_number,' . ($profile->id ?? 'NULL'),
@@ -38,27 +39,35 @@ class ProfileController extends Controller
             'education' => 'required|string',
             'experience' => 'required|string',
             'skills' => 'required|string',
-            'resume' => $request->method() == 'PUT' ? 'required|file|mimes:pdf|mimetypes:application/pdf|max:2048|' : 'nullable|file|mimes:pdf|mimetypes:application/pdf|max:2048',
-            'image' => $request->method() == 'PUT' ? 'required|image|mimes:jpeg,png,jpg,svg|mimetypes:image/jpeg,image/png,image/jpg,image/svg|max:2048' : 'nullable|image|mimes:jpeg,png,jpg,svg|mimetypes:image/jpeg,image/png,image/jpg,image/svg|max:2048',
-        ]);
+        ];
+
+        // Add conditional validation rules for files
+        if ($request->hasFile('resume')) {
+            $rules['resume'] = 'file|mimes:pdf|mimetypes:application/pdf|max:2048';
+        }
+
+        if ($request->hasFile('image')) {
+            $rules['image'] = 'image|mimes:jpeg,png,jpg,svg|mimetypes:image/jpeg,image/png,image/jpg,image/svg|max:2048';
+        }
+
+        $validatedData = $request->validate($rules);
 
         try {
-
+            // Handle resume upload
             if ($request->hasFile('resume')) {
                 if ($profile->resume) {
                     Storage::disk('public')->delete($profile->resume);
                 }
-
                 $validatedData['resume'] = $request->file('resume')->store('resumes', 'public');
             } else {
                 $validatedData['resume'] = $profile->resume;
             }
 
+            // Handle image upload
             if ($request->hasFile('image')) {
                 if ($profile->image) {
                     Storage::disk('public')->delete($profile->image);
                 }
-
                 $validatedData['image'] = $request->file('image')->store('images', 'public');
             } else {
                 $validatedData['image'] = $profile->image;
@@ -71,12 +80,12 @@ class ProfileController extends Controller
             return redirect()->route('panel.profile.edit')->with('success', 'Profile updated successfully!');
 
         } catch (\Exception $error) {
-            if ($profile->resume) {
-                Storage::disk('public')->delete($profile->resume);
+            // Only delete newly uploaded files if there's an error
+            if ($request->hasFile('resume')) {
+                Storage::disk('public')->delete($validatedData['resume'] ?? '');
             }
-
-            if ($profile->image) {
-                Storage::disk('public')->delete($profile->image);
+            if ($request->hasFile('image')) {
+                Storage::disk('public')->delete($validatedData['image'] ?? '');
             }
 
             return redirect()->route('panel.profile.edit')->with('error', $error->getMessage());

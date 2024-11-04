@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('jobdesc_id')->constrained('job_descs');
             $table->foreignId('applicant_id')->constrained('users');
             $table->enum('status', ['pending', 'reviewed', 'accepted', 'rejected'])->default('pending');
+            $table->date('date');
             $table->timestamps();
 
         });

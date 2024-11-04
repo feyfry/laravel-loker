@@ -1,5 +1,5 @@
     <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-lg-none" aria-label="Tertiary navigation">
-        <a class="navbar-brand me-lg-5" href="{{ asset('backend') }}/index.html">
+        <a class="navbar-brand me-lg-5" href="{{ route('panel.dashboard') }}">
             <img class="navbar-brand-dark" src="{{ asset('backend') }}/assets/img/brand/light.svg" alt="Volt logo" />
             <img class="navbar-brand-light" src="{{ asset('backend') }}/assets/img/brand/dark.svg" alt="Volt logo" />
         </a>
@@ -12,20 +12,21 @@
         </div>
     </nav>
 
-    <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar aria-label="Sidebar">
+    <nav id="sidebarMenu" class="sidebar d-lg-block bg-gray-800 text-white collapse" data-simplebar
+        aria-label="Sidebar">
         <div class="sidebar-inner px-4 pt-3">
             <div
                 class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
                 <div class="d-flex align-items-center">
                     <div class="avatar-lg me-4">
-                        <img class="avatar rounded-circle" alt=""
-                                src="{{ auth()->user()->profile && auth()->user()->profile->image
+                        <img class="avatar rounded-circle" alt="" src="{{ auth()->user()->profile && auth()->user()->profile->image
                                     ? asset('storage/' . auth()->user()->profile->image)
                                     : asset('backend/assets/img/team/profile-picture-3.jpg') }}">
                     </div>
                     <div class="d-block">
                         <h2 class="h5 mb-3">Hi, {{ Auth::user()->username }}</h2>
                         <a href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                             class="btn btn-secondary btn-sm d-inline-flex align-items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                 class="bi bi-box-arrow-left me-2" viewBox="0 0 16 16">
@@ -57,7 +58,11 @@
                             <img src="{{ asset('backend') }}/assets/img/brand/light.svg" height="20" width="20"
                                 alt="Volt Logo">
                         </span>
-                        <span class="mt-1 ms-1 sidebar-text">Admin Panel</span>
+                        @if (auth()->user()->role == 'admin')
+                            <span class="mt-1 ms-1 sidebar-text">Panel Admin</span>
+                        @else
+                            <span class="mt-1 ms-1 sidebar-text">Panel Pelamar</span>
+                        @endif
                     </div>
                 </li>
                 <li class="nav-item {{ request()->routeIs('panel.dashboard') ? 'active' : '' }}">
@@ -73,11 +78,25 @@
                     </a>
                 </li>
 
-                {{-- Master --}}
-                <li class="nav-item">
-                    <span class="nav-link collapsed d-flex justify-content-between align-items-center"
-                        data-bs-toggle="collapse" data-bs-target="#submenu-app">
-                        <span>
+                @if (session('user_role') === 'pelamar')
+                <li class="nav-item {{ request()->routeIs('panel.list.*') ? 'active' : '' }}">
+                    <a href="{{ route('panel.list.index') }}" class="nav-link">
+                        <span class="sidebar-icon">
+                            <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 6H21M8 12H21M8 18H21M3 6H3.01M3 12H3.01M3 18H3.01">
+                                </path>
+                            </svg>
+                        </span>
+                        <span class="sidebar-text">List Loker</span>
+                    </a>
+                </li>
+                @endif
+
+                @if (session('user_role') === 'admin')
+                    <li class="nav-item {{ request()->routeIs('panel.loker.*') ? 'active' : '' }}">
+                        <a href="{{ route('panel.loker.index') }}" class="nav-link">
                             <span class="sidebar-icon">
                                 <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -87,92 +106,23 @@
                                 </svg>
                             </span>
                             <span class="sidebar-text">Manage Loker</span>
-                        </span>
-                        <span class="link-arrow">
-                            <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </span>
-                    </span>
+                        </a>
+                    </li>
 
-                    {{-- {{ request()->routeIs('panel.menu.*', 'panel.chef.*', 'panel.event.*') ? 'show' : '' }} --}}
-                    <div class="multi-level collapse"
-                        role="list" id="submenu-app">
-                        <ul class="flex-column nav">
-                            {{-- {{ request()->routeIs('panel.menu.*') ? 'active' : '' }} --}}
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span class="sidebar-text">Menu</span>
-                                </a>
-                            </li>
-
-                            {{-- {{ request()->routeIs('panel.chef.*') ? 'active' : '' }} --}}
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span class="sidebar-text">Chef</span>
-                                </a>
-                            </li>
-
-                            {{-- {{ request()->routeIs('panel.event.*') ? 'active' : '' }} --}}
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span class="sidebar-text">Event</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                {{-- Gallery --}}
-                <li class="nav-item">
-                    <span class="nav-link  collapsed  d-flex justify-content-between align-items-center"
-                        data-bs-toggle="collapse" data-bs-target="#submenu-gallery">
-                        <span>
+                    <li class="nav-item {{ request()->routeIs('panel.lamaran.*') ? 'active' : '' }}">
+                        <a href="{{ route('panel.lamaran.index') }}" class="nav-link">
                             <span class="sidebar-icon">
-                                <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"
+                                <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd"
-                                        d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm1 9.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM15 5.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
-                                        clip-rule="evenodd"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 21h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2zm4-5h6a1 1 0 011 1v3a1 1 0 01-1 1h-6a1 1 0 01-1-1v-3a1 1 0 011-1z">
+                                    </path>
                                 </svg>
                             </span>
                             <span class="sidebar-text">Kelola Lamaran</span>
-                        </span>
-                        <span class="link-arrow">
-                            <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                        </span>
-                    </span>
-
-                    {{-- {{ request()->routeIs('panel.image.*', 'panel.video.*') ? 'show' : '' }} --}}
-                    <div class="multi-level collapse"
-                        role="list" id="submenu-gallery" >
-                        <ul class="flex-column nav">
-                            {{-- {{ request()->routeIs('panel.image.*') ? 'active' : '' }} --}}
-                            <li class="nav-item">
-                                {{-- {{ route('panel.image.index') }} --}}
-                                <a class="nav-link" href="">
-                                    <span class="sidebar-text">Image</span>
-                                </a>
-                            </li>
-
-                            {{-- {{ request()->routeIs('panel.video.*') ? 'active' : '' }} --}}
-                            <li class="nav-item">
-                                {{-- {{ route('panel.video.index') }} --}}
-                                <a class="nav-link" href="">
-                                    <span class="sidebar-text">Video</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                        </a>
+                    </li>
+                @endif
 
                 <li role="separator" class="dropdown-divider pt-1 mt-3 border-gray-700"></li>
 
@@ -193,7 +143,7 @@
                 {{-- <li role="separator" class="dropdown-divider pt-1 border-gray-700"></li>
 
                 <li class="nav-item">
-                    <a href="https://themesberg.com/docs/volt-bootstrap-5-dashboard/getting-started/quick-start/"
+                    <a href="#"
                         target="_blank" class="nav-link d-flex align-items-center">
                         <span class="sidebar-icon">
                             <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20"

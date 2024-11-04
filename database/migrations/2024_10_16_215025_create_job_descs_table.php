@@ -16,10 +16,15 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->foreignId('posted_by')->constrained('users');
             $table->string('title');
+            $table->string('company_name');
+            $table->string('location');
+            $table->string('position');
+            $table->enum('type', ['full-time', 'part-time', 'contract', 'internship'])->default('full-time');
+            $table->string('salary_range_min')->nullable();
+            $table->string('salary_range_max')->nullable();
             $table->text('description');
             $table->text('requirements');
-            $table->string('salary_range');
-            $table->string('location');
+            $table->text('questions');
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();
         });

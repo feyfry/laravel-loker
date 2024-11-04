@@ -1,5 +1,7 @@
 @extends('auth.layout')
 
+@section('title', 'Sign up page')
+
 @section('content')
 <main>
     <!-- Section -->
