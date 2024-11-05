@@ -3,7 +3,7 @@
 
 Kepada {{ $lamaran->applicant->profile->full_name }},
 
-Terima kasih telah melamar posisi **{{ $lamaran->jobdesc->position }}** di **{{ $lamaran->jobdesc->company_name }}**. Kami ingin memberikan informasi terkait status lamaran Anda saat ini.
+Terima kasih telah melamar posisi **{{ $lamaran->jobdesc->title }}** bidang **{{ $lamaran->jobdesc->position }}** di **{{ $lamaran->jobdesc->company_name }}**. Kami ingin memberikan informasi terkait status lamaran Anda saat ini.
 
 @if ($lamaran->status === 'reviewed')
 Kami ingin menginformasikan bahwa lamaran Anda saat ini sedang dalam proses peninjauan oleh tim rekrutmen kami. Kami akan segera menghubungi Anda jika ada perkembangan lebih lanjut terkait proses ini.
