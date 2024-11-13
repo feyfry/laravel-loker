@@ -137,14 +137,10 @@
     var chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: {
-                !!json_encode($applicationsPerDay - > pluck('date')) !!
-            },
+            labels: {!!json_encode($applicationsPerDay->pluck('date')) !!},
             datasets: [{
                 label: 'Jumlah Lamaran',
-                data: {
-                    !!json_encode($applicationsPerDay - > pluck('count')) !!
-                },
+                data: {!!json_encode($applicationsPerDay->pluck('count')) !!},
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(78, 115, 223, 0.05)',
                 borderWidth: 2,
@@ -172,27 +168,7 @@
         data: {
             labels: ['Pending', 'Reviewed', 'Accepted', 'Rejected'],
             datasets: [{
-                data: [{
-                        {
-                            $pendingApplications
-                        }
-                    },
-                    {
-                        {
-                            $reviewedApplications
-                        }
-                    },
-                    {
-                        {
-                            $acceptedApplications
-                        }
-                    },
-                    {
-                        {
-                            $rejectedApplications
-                        }
-                    }
-                ],
+                data: [{{$pendingApplications}}, {{$reviewedApplications}}, {{$acceptedApplications}}, {{$rejectedApplications}}],
                 backgroundColor: [
                     'rgb(255, 205, 86)',
                     'rgb(54, 162, 235)',
