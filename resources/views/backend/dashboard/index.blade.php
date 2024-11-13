@@ -109,13 +109,13 @@
                                 <td>{{ $application->applicant->profile->full_name }}</td>
                                 <td>{{ $application->jobdesc->title }}</td>
                                 @if ($application->status == 'pending')
-                                    <td><span class="badge bg-warning text-black">Pending</span></td>
+                                <td><span class="badge bg-warning text-black">Pending</span></td>
                                 @elseif($application->status == 'reviewed')
-                                    <td><span class="badge bg-info">Direview</span></td>
+                                <td><span class="badge bg-info">Direview</span></td>
                                 @elseif($application->status == 'accepted')
-                                    <td><span class="badge bg-success">Diterima</span></td>
+                                <td><span class="badge bg-success">Diterima</span></td>
                                 @elseif ($application->status == 'rejected')
-                                    <td><span class="badge bg-danger">Ditolak</span></td>
+                                <td><span class="badge bg-danger">Ditolak</span></td>
                                 @endif
                                 <td>{{ date('d M Y', strtotime($application->date)) }}</td>
                             </tr>
@@ -137,10 +137,14 @@
     var chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: {!! json_encode($applicationsPerDay->pluck('date')) !!},
+            labels: {
+                !!json_encode($applicationsPerDay - > pluck('date')) !!
+            },
             datasets: [{
                 label: 'Jumlah Lamaran',
-                data: {!! json_encode($applicationsPerDay->pluck('count')) !!},
+                data: {
+                    !!json_encode($applicationsPerDay - > pluck('count')) !!
+                },
                 borderColor: 'rgb(75, 192, 192)',
                 backgroundColor: 'rgba(78, 115, 223, 0.05)',
                 borderWidth: 2,
@@ -168,11 +172,26 @@
         data: {
             labels: ['Pending', 'Reviewed', 'Accepted', 'Rejected'],
             datasets: [{
-                data: [
-                    {{ $pendingApplications }},
-                    {{ $reviewedApplications }},
-                    {{ $acceptedApplications }},
-                    {{ $rejectedApplications }}
+                data: [{
+                        {
+                            $pendingApplications
+                        }
+                    },
+                    {
+                        {
+                            $reviewedApplications
+                        }
+                    },
+                    {
+                        {
+                            $acceptedApplications
+                        }
+                    },
+                    {
+                        {
+                            $rejectedApplications
+                        }
+                    }
                 ],
                 backgroundColor: [
                     'rgb(255, 205, 86)',
@@ -193,6 +212,7 @@
             responsive: true
         }
     });
+
 </script>
 @endpush
 
@@ -218,23 +238,23 @@
             <div class="dropdown-divider mt-4 pb-3"></div>
 
             @if($lamaran->isEmpty())
-                <div class="position-relative m-4">
-                    <div class="progress" role="progressbar" aria-label="Progress" aria-valuenow="0" aria-valuemin="0"
-                        aria-valuemax="100" style="height: 1px;">
-                        <div class="progress-bar" style="width: 0%"></div>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span
-                            class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-secondary text-black">...</span>
-                        <span
-                            class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-secondary text-black">...</span>
-                        <span
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary text-black">...</span>
-                    </div>
-                    <div class="text-center mt-4">
-                        <p class="text-muted">Anda belum mengajukan lamaran apapun</p>
-                    </div>
+            <div class="position-relative m-4">
+                <div class="progress" role="progressbar" aria-label="Progress" aria-valuenow="0" aria-valuemin="0"
+                    aria-valuemax="100" style="height: 1px;">
+                    <div class="progress-bar" style="width: 0%"></div>
                 </div>
+                <div class="d-flex justify-content-between">
+                    <span
+                        class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-secondary text-black">...</span>
+                    <span
+                        class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-secondary text-black">...</span>
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary text-black">...</span>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="text-muted">Anda belum mengajukan lamaran apapun</p>
+                </div>
+            </div>
             @else
             @foreach($lamaran as $item)
             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -252,7 +272,7 @@
                 {{-- Pending Status --}}
                 <button type="button"
                     class="position-absolute top-0 start-0 ms-4 translate-middle btn btn-sm {{ $item->status == 'pending' ? 'btn-secondary' : 'btn-primary' }} rounded-pill"
-                    data-bs-toggle="tooltip" data-bs-placement="top" title="Lamaran Anda sedang dalam antrian">
+                    data-bs-toggle="tooltip" data-bs-placement="right" title="Lamaran Anda sedang dalam antrian">
                     Pending
                 </button>
 
@@ -268,12 +288,23 @@
 
                 {{-- Final Status (Accepted/Rejected) --}}
                 @if (in_array($item->status, ['accepted', 'rejected']))
-                <button type="button"
-                    class="position-absolute top-0 start-100 translate-middle btn btn-sm {{ $item->status == 'accepted' ? 'btn-success' : 'btn-danger' }} rounded-pill text-white"
-                    data-bs-toggle="tooltip" data-bs-placement="top" style="margin-left: -27px;"
-                    title="{{ $item->status == 'accepted' ? 'Selamat! Anda lolos dalam lamaran ini.' : 'Maaf, Anda tidak lolos dalam lamaran ini. Silahkan coba lagi di lain waktu' }}">
-                    {{ $item->status == 'accepted' ? 'Accepted' : 'Rejected' }}
-                </button>
+                    @if ($item->status == 'accepted')
+                        <a href="{{ route('panel.jadwal-interview.pelamar.index') }}">
+                            <button type="button"
+                                class="position-absolute top-0 start-100 translate-middle btn btn-sm {{ $item->status == 'accepted' ? 'btn-success' : 'btn-danger' }} rounded-pill text-white"
+                                data-bs-toggle="tooltip" data-bs-placement="top" style="margin-left: -27px;"
+                                title="{{ $item->status == 'accepted' ? 'Selamat! Anda lolos dalam lamaran ini.' : 'Maaf, Anda tidak lolos dalam lamaran ini. Silahkan coba lagi di lain waktu' }}">
+                                {{ $item->status == 'accepted' ? 'Accepted' : 'Rejected' }}
+                            </button>
+                        </a>
+                    @else
+                        <button type="button"
+                            class="position-absolute top-0 start-100 translate-middle btn btn-sm {{ $item->status == 'accepted' ? 'btn-success' : 'btn-danger' }} rounded-pill text-white"
+                            data-bs-toggle="tooltip" data-bs-placement="top" style="margin-left: -27px;"
+                            title="{{ $item->status == 'accepted' ? 'Selamat! Anda lolos dalam lamaran ini.' : 'Maaf, Anda tidak lolos dalam lamaran ini. Silahkan coba lagi di lain waktu' }}">
+                            {{ $item->status == 'accepted' ? 'Accepted' : 'Rejected' }}
+                        </button>
+                    @endif
                 @endif
             </div>
             @endforeach

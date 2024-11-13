@@ -20,7 +20,7 @@ class LamaranController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!$request->user()->isAdmin()) {
+            if (!$request->user()->hasRole('admin')) {
                 abort(403, 'Unauthorized action.');
             }
 
@@ -45,9 +45,14 @@ class LamaranController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(): View
+    public function show(string $uuid): View
     {
-        return view('backend.lamaran.show');
+        // Alternatif bisa menggunakan fungsi whereUuid($uuid)->firstOrFail();
+        $lamaran = Lamaran::with(['jobdesc', 'applicant.profile'])->where('uuid', $uuid)->firstOrFail();
+
+        return view('backend.lamaran.show', [
+            'lamaran' => $lamaran,
+        ]);
     }
 
     /**

@@ -12,17 +12,15 @@ Setelah melakukan peninjauan yang cermat, kami ingin menyampaikan bahwa, untuk s
 @elseif ($lamaran->status === 'accepted')
 Selamat! Kami sangat senang menginformasikan bahwa Anda telah berhasil melewati proses seleksi untuk posisi ini. Kami percaya bahwa keterampilan dan pengalaman Anda akan menjadi tambahan yang berharga untuk tim kami.
 
-Pastikan Anda datang ke perusahaan kami untuk wawancara lanjutan yang akan diadakan pada:
-**Tanggal: [tanggal interview]**
-**Waktu: [waktu interview]**
-**Lokasi: [alamat perusahaan]**
+Cek secara berkala untuk informasi lebih lanjut tentang jadwal dan lokasi wawancara selanjutnya pada halaman <a href="{{ route('panel.jadwal-interview.pelamar.index') }}">Jadwal Interview</a>.
+Pastikan Anda datang ke perusahaan kami tepat waktu untuk wawancara.
 
-Silakan klik tombol di bawah untuk mengonfirmasi kehadiran Anda dan mendapatkan informasi lebih lanjut tentang persiapan wawancara.
+Atau silakan klik tombol di bawah untuk melihat jadwal interview Anda dan mendapatkan informasi lebih lanjut tentang persiapan wawancara.
 @endif
 
 @if ($lamaran->status === 'accepted')
-<x-mail::button :url="'#'">
-Formulir Kehadiran
+<x-mail::button :url="route('panel.jadwal-interview.pelamar.index')">
+Lihat Jadwal Interview
 </x-mail::button>
 @else
 <x-mail::button :url="route('panel.dashboard')">

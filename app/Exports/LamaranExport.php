@@ -30,9 +30,15 @@ class LamaranExport implements FromCollection, WithHeadings, WithDefaultStyles, 
         return Lamaran::whereBetween('created_at', [$this->start_date, $this->end_date])->get()->map(function ($Lamaran, $index) {
             return [
                 $index + 1,
+                $Lamaran->applicant->profile->full_name,
+                $Lamaran->applicant->profile->date_of_birth,
+                $Lamaran->applicant->profile->phone_number,
+                $Lamaran->applicant->profile->address,
                 $Lamaran->jobdesc->title,
-                $Lamaran->applicant->name,
-                $Lamaran->created_at->format('d-m-Y'),
+                $Lamaran->jobdesc->company_name,
+                $Lamaran->jobdesc->position,
+                $Lamaran->jobdesc->type,
+                $Lamaran->created_at->format('d-m-Y H:i'),
                 $Lamaran->status,
             ];
         });
@@ -42,9 +48,15 @@ class LamaranExport implements FromCollection, WithHeadings, WithDefaultStyles, 
     {
         return [
             '#',
-            'Title',
-            'Name',
-            'Date',
+            'Nama Pelamar',
+            'Tanggal Lahir:',
+            'No.HP:',
+            'Alamat:',
+            'Posisi Pekerjaan',
+            'Perusahaan',
+            'Bidang',
+            'Tipe Pekerjaan',
+            'Tanggal Melamar',
             'Status',
         ];
     }

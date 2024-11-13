@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\TrackUserActivityMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'agent' => Jenssegers\Agent\Facades\Agent::class,
         ]);
+
+        // $middleware->web(TrackUserActivityMiddleware::class);
 
     })
     ->withExceptions(function (Exceptions $exceptions) {

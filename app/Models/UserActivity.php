@@ -3,18 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserActivity extends Model
 {
     protected $fillable = [
+        'user_id',
+        'session_id',
         'ip_address',
         'location',
         'browser',
         'user_agent',
-        'last_activity',
         'last_page',
-        'referrer',
-        'session_id',
+        'referrer'
     ];
 
     protected $casts = [
@@ -22,4 +23,9 @@ class UserActivity extends Model
         'browser' => 'array',
         'last_activity' => 'datetime',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

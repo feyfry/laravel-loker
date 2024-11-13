@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Jenssegers\Agent\Agent;
 use App\Models\UserActivity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Stevebauman\Location\Facades\Location;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,8 @@ class TrackUserActivityMiddleware
         $agent = new Agent();
 
         $userData = [
+            'user_id' => Auth::check() ? Auth::id() : null,
+            'session_id' => Session::getId(),
             'ip_address' => $request->ip(),
             'location' => Location::get($request->ip()) ?? [],
             'browser' => [
@@ -39,7 +42,6 @@ class TrackUserActivityMiddleware
             'last_activity' => Carbon::now(),
             'last_page' => $request->fullUrl(),
             'referrer' => $request->headers->get('referer'),
-            'session_id' => Session::getId(),
         ];
 
         // Simpan ke database
