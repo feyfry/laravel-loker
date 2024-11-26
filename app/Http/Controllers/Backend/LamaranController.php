@@ -6,6 +6,9 @@ use App\Exports\LamaranExport;
 use App\Http\Controllers\Controller;
 use App\Mail\LamaranConfirmMail;
 use App\Models\Lamaran;
+use App\Models\Notification;
+use App\Reports\LamaranPDFReport;
+use Carbon\Carbon;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -91,6 +94,18 @@ class LamaranController extends Controller
                 ->cc('feifeifry@gmail.com')
                 ->send(new LamaranConfirmMail($lamaran));
 
+            Notification::create([
+                'user_id' => $lamaran->applicant->id,
+                'title' => 'Status Lamaran Diperbarui',
+                'message' => "Status lamaran Anda untuk posisi {$lamaran->jobdesc->title} telah diubah menjadi " . ucfirst($lamaran->status),
+                'type' => 'status_lamaran',
+                'data' => [
+                    'lamaran_id' => $lamaran->id,
+                    'status' => $lamaran->status,
+                ],
+                'link' => route('panel.list.show', $lamaran->jobdesc->uuid),
+            ]);
+
             return redirect()->back()->with('success', 'Lamaran status updated successfully');
         } catch (\Exception $error) {
             return redirect()->back()->with('error', $error->getMessage());
@@ -111,15 +126,32 @@ class LamaranController extends Controller
 
     public function download(Request $request)
     {
-        $data = $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-        ]);
-
         try {
-            return Excel::download(new LamaranExport($data['start_date'], $data['end_date']), 'laporan_lamaran.xlsx');
+            $validated = $request->validate([
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'format' => 'required|in:pdf,excel',
+            ]);
+
+            // Format tanggal untuk nama file
+            $start = Carbon::parse($validated['start_date'])->format('d-m-Y');
+            $end = Carbon::parse($validated['end_date'])->format('d-m-Y');
+            $filename = "laporan_lamaran_periode_{$start}_sd_{$end}";
+
+            if ($validated['format'] === 'pdf') {
+                $report = new LamaranPDFReport($validated['start_date'], $validated['end_date']);
+                $pdf = $report->generate();
+                return $pdf->download($filename . '.pdf');
+            } else {
+                return Excel::download(
+                    new LamaranExport($validated['start_date'], $validated['end_date']),
+                    $filename . '.xlsx'
+                );
+            }
         } catch (\Exception $error) {
-            return redirect()->back()->with('error', $error->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $error->getMessage());
         }
     }
 }

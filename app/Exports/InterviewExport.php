@@ -2,7 +2,9 @@
 
 namespace App\Exports;
 
-use App\Models\Lamaran;
+use Carbon\Carbon;
+use App\Models\InterviewSchedule;
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Style;
@@ -11,9 +13,8 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithDefaultStyles;
 
-class LamaranExport implements FromCollection, WithHeadings, WithDefaultStyles, ShouldAutoSize
+class InterviewExport implements FromCollection, WithHeadings, WithDefaultStyles, ShouldAutoSize
 {
-
     protected $start_date, $end_date;
 
     public function __construct($start_date, $end_date)
@@ -27,19 +28,23 @@ class LamaranExport implements FromCollection, WithHeadings, WithDefaultStyles, 
      */
     public function collection()
     {
-        return Lamaran::whereBetween('created_at', [$this->start_date, $this->end_date])->get()->map(function ($Lamaran, $index) {
+        return InterviewSchedule::query()
+        ->whereDate('created_at', '>=', $this->start_date)
+        ->whereDate('created_at', '<=', $this->end_date)
+        ->with(['application.jobdesc', 'application.applicant.profile'])
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($interview, $index) {
             return [
                 $index + 1,
-                $Lamaran->applicant->profile->full_name,
-                $Lamaran->applicant->profile->date_of_birth,
-                $Lamaran->applicant->profile->phone_number,
-                $Lamaran->applicant->profile->address,
-                $Lamaran->jobdesc->title,
-                $Lamaran->jobdesc->company_name,
-                $Lamaran->jobdesc->position,
-                $Lamaran->jobdesc->type,
-                $Lamaran->created_at->format('d-m-Y H:i'),
-                $Lamaran->status,
+                $interview->application->applicant->profile->full_name ?? 'N/A',
+                $interview->application->jobdesc->title ?? 'N/A',
+                $interview->application->jobdesc->company_name ?? 'N/A',
+                Carbon::parse($interview->interview_date)->format('d-m-Y H:i'),
+                $interview->interview_method,
+                $interview->interview_location ?? '-',
+                $interview->interviewer_name,
+                $interview->status,
             ];
         });
     }
@@ -49,14 +54,12 @@ class LamaranExport implements FromCollection, WithHeadings, WithDefaultStyles, 
         return [
             '#',
             'Nama Pelamar',
-            'Tanggal Lahir',
-            'No.HP',
-            'Alamat',
-            'Posisi Pekerjaan',
+            'Posisi',
             'Perusahaan',
-            'Bidang',
-            'Tipe Pekerjaan',
-            'Tanggal Melamar',
+            'Tanggal Interview',
+            'Metode Interview',
+            'Lokasi',
+            'Interviewer',
             'Status',
         ];
     }

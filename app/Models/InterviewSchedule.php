@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,5 +35,14 @@ class InterviewSchedule extends Model
     public function application(): BelongsTo
     {
         return $this->belongsTo(Lamaran::class, 'application_id');
+    }
+
+    // Query scope untuk memudahkan filter tanggal
+    public function scopeInPeriod($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('interview_date', [
+            Carbon::parse($startDate)->startOfDay(),
+            Carbon::parse($endDate)->endOfDay()
+        ]);
     }
 }

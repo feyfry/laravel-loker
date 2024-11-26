@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\LamaranPendingMail;
 use App\Models\Lamaran;
 use App\Models\ListLoker;
+use App\Models\Notification;
 use App\Models\Profile;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -102,6 +103,18 @@ class ListLokerController extends Controller
             Mail::to($currentUser->email)
                 ->cc('feifeifry@gmail.com')
                 ->send(new LamaranPendingMail($lamaran));
+
+            Notification::create([
+                'user_id' => $loker->posted_by,
+                'title' => 'Lamaran Baru',
+                'message' => "{$lamaran->applicant->profile->full_name} telah melamar untuk posisi {$loker->title}",
+                'type' => 'lamaran',
+                'data' => [
+                    'lamaran_id' => $lamaran->id,
+                    'loker_id' => $loker->id,
+                ],
+                'link' => route('panel.lamaran.show', $lamaran->uuid),
+            ]);
 
             return response()->json([
                 'status' => 'success',

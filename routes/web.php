@@ -8,6 +8,7 @@ use App\Http\Controllers\Backend\LamaranController;
 use App\Http\Controllers\Backend\ProfileController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\ListLokerController;
+use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\JadwalInterviewController;
 use App\Http\Controllers\Backend\PelamarInterviewController;
 
@@ -50,5 +51,13 @@ Route::prefix('panel')->middleware('auth')->group(function () {
         Route::resource('/lamaran', LamaranController::class)->except('create', 'store')->names('panel.lamaran');
         Route::post('/lamaran/download', [LamaranController::class, 'download'])->name('panel.lamaran.download');
         Route::resource('/kelola-interview', JadwalInterviewController::class)->names('panel.jadwal-interview');
+        Route::post('/kelola-interview/download', [JadwalInterviewController::class, 'downloadReport'])->name('panel.jadwal-interview.download');
     });
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('panel.notifications.index');
+    Route::get('/notifications/unread', [NotificationController::class, 'getUnreadCount']);
+    Route::get('/notifications/latest', [NotificationController::class, 'getLatest']);
+    Route::post('/notifications/{uuid}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+
 });

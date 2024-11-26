@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->foreignId('user_id')->constrained();
-            $table->text('message');
-            $table->boolean('is_read')->default(false);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('title'); // Judul notifikasi
+            $table->text('message'); // Pesan notifikasi
+            $table->string('type'); // Tipe: lamaran, interview, etc
+            $table->json('data')->nullable(); // Data tambahan dalam format JSON
+            $table->string('link')->nullable(); // Link untuk redirect ketika notifikasi diklik
+            $table->boolean('is_read')->default(false); // Status dibaca/belum
             $table->timestamps();
-
         });
     }
 
