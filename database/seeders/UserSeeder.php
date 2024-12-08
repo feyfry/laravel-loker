@@ -14,14 +14,20 @@ class UserSeeder extends Seeder
     {
         User::insert([
             [
-                'username' => 'feyfry',
+                'username' => 'faiz',
                 'email' => 'feifeifry@gmail.com',
                 'password' => bcrypt('password'),
                 'role' => 'admin',
             ],
             [
-                'username' => 'shilfaa',
-                'email' => 'shilfaashaphiera@gmail.com',
+                'username' => 'rama',
+                'email' => 'yoonionk@gmail.com',
+                'password' => bcrypt('password'),
+                'role' => 'pelamar',
+            ],
+            [
+                'username' => 'anantha',
+                'email' => 'ananthamarcellino@gmail.com',
                 'password' => bcrypt('password'),
                 'role' => 'pelamar',
             ],
